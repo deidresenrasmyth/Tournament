@@ -47,6 +47,7 @@ CREATE TABLE TOURNAMENTS.Participant(
 
  
  --Payments Payment date must always be the current system date
+ --To create Constrain criar codigo ALTER TABLE
  
 ALTER TABLE TOURNAMENTS.Payment
 add CONSTRAINT PaymentDateConstrait -- nome aleatorio 
