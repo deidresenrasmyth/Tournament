@@ -13,7 +13,7 @@ go
 CREATE SCHEMA TOURNAMENTS; 
 GO
 
-CREATE TABLE TOURNAMENTS.TOUNARMENT (
+CREATE TABLE TOURNAMENTS.Tournament (
     TournamentId INT constraint PKTournament  PRIMARY KEY IDENTITY (1, 1),
     TournamentName VARCHAR (40) NOT NULL,
    DescriptionID VARCHAR (200) NOT NULL,
@@ -25,8 +25,8 @@ CREATE TABLE TOURNAMENTS.TOUNARMENT (
 	    );
 
 
-CREATE TABLE TOURNAMENTS.PARTICIPANT(
-   ParticipantId INT constraint PKPARTICIPANT  PRIMARY KEY IDENTITY (1, 1),
+CREATE TABLE TOURNAMENTS.Participant(
+   ParticipantId INT constraint PKParticipant  PRIMARY KEY IDENTITY (1, 1),
     ParticipantName Varchar (30)  NOT NULL,
    BirthDate Date  NOT NULL,
     EmailAddreass Varchar (50)  NOT NULL,
@@ -40,8 +40,8 @@ CREATE TABLE TOURNAMENTS.PARTICIPANT(
    PaimentDate Date  NOT NULL,
     TournamentId INT  NOT NULL,
     ParticipantId INT NOT NULL,
-	FOREIGN KEY (TournamentId) REFERENCES TOURNAMENTS.TOUNARMENT(TournamentId),
-	FOREIGN KEY (ParticipantId) REFERENCES TOURNAMENTS.PARTICIPANT(ParticipantId),
+	FOREIGN KEY (TournamentId) REFERENCES TOURNAMENTS.Tournament(TournamentId),
+	FOREIGN KEY (ParticipantId) REFERENCES TOURNAMENTS.Participant(ParticipantId),
 		    );
 
 
@@ -53,7 +53,7 @@ add CONSTRAINT PaymentDateConstrait -- nome aleatorio
 DEFAULT GETDATE() for PaimentDate -- nome da coluna
 
 -- Participants must be 16 years or older in order to register to any of these teams
-ALTER TABLE TOURNAMENTS.PARTICIPANT
+ALTER TABLE TOURNAMENTS.Participant
 ADD CONSTRAINT CHK_BirthDate --birthdate nome aleatorio
 CHECK  (GETDATE()-  convert(DateTime,BirthDate) > = 16 ); --BirthDate repetir onome anterior que e o constrait
 GO  
@@ -80,26 +80,56 @@ AS
 	GO
 
 	DROP FUNCTION TOURNAMENTS.Formatdate
+	GO
 
-	--CREATE STORE PROCEDURE FAZER AMANHA
+--CREATE STORE PROCEDURE 
 
-	CREATE PROCEDURE DDRestaurantLatin.EmployeesInsert @FirstName varchar(20), @LastName varchar(20), 
-@PhoneNumber varchar(17), @Email varchar(60), @SinNumber varchar(20), @EmployeeAddress varchar(50), @BirthDate datetime
+--For Insert
+
+CREATE PROCEDURE TOURNAMENTS.ParticipantInsert @ParticipantName varchar(30), @BirthDate DATE, 
+@EmailAddreass varchar(50), @ParticipantPassword varchar(30)
 AS
-INSERT INTO DDRestaurantLatin.Employees(FirstName, LastName, PhoneNumber, Email, SinNumber, EmployeeAddress, BirthDate)
-VALUES                                (@FirstName, @LastName, @PhoneNumber, @Email, @SinNumber, @EmployeeAddress, @BirthDate);
+INSERT INTO TOURNAMENTS.Participant(ParticipantName, BirthDate, EmailAddreass, ParticipantPassword)
+VALUES                                (@ParticipantName , @BirthDate , @EmailAddreass , @ParticipantPassword );
 GO
 
-CREATE PROCEDURE DDRestaurantLatin.EmployeesUpdate @EmployeeId int, @FirstName varchar(20), @LastName varchar(20), 
-@PhoneNumber varchar(17), @Email varchar(60), @SinNumber varchar(20), @EmployeeAddress varchar(50), @BirthDate datetime
-AS
-UPDATE DDRestaurantLatin.Employees
-SET FirstName = @FirstName, LastName = @LastName, PhoneNumber = @PhoneNumber, Email = @Email, SinNumber = @SinNumber, EmployeeAddress = @EmployeeAddress, BirthDate = @BirthDate
-WHERE EmployeeId = @EmployeeId;
+--Inserir valores Julian etc usar store procedure
+EXEC TOURNAMENTS.ParticipantInsert 'Julian' , '07/15/1985' , 'juliandavid@live.com' , '220010'
+
+SELECT * FROM TOURNAMENTS.Participant
 GO
 
-CREATE PROCEDURE DDRestaurantLatin.EmployeesDelete @EmployeeId int 
+
+--For Update
+CREATE PROCEDURE TOURNAMENTS.ParticipantUpdate @ParticipantId int,  @ParticipantName varchar(30), @BirthDate DATE, 
+@EmailAddreass varchar(50), @ParticipantPassword varchar(30)
 AS
-DELETE FROM DDRestaurantLatin.Employees
-WHERE EmployeeId = @EmployeeId;
+UPDATE TOURNAMENTS.Participant
+SET ParticipantName = @ParticipantName, BirthDate = @BirthDate, EmailAddreass = @EmailAddreass
+WHERE ParticipantId = @ParticipantId;
 GO
+
+--para testar a funcao digitar o codigo abaixo
+EXEC TOURNAMENTS.ParticipantUpdate 1,'Julian David' , '07/15/1985' , 'juliandavid@live.com' , '220010'
+
+SELECT * FROM TOURNAMENTS.Participant
+
+GO
+--For Delete
+CREATE PROCEDURE TOURNAMENTS.ParticipantDelete @ParticipantId int 
+AS
+DELETE FROM TOURNAMENTS.Participant
+WHERE ParticipantId = @ParticipantId;
+GO
+
+EXEC TOURNAMENTS.ParticipantDelete 1
+
+SELECT * FROM TOURNAMENTS.Participant
+
+GO
+
+DROP TABLE TOURNAMENTS.Payment
+
+DROP TABLE TOURNAMENTS.Tounarmnet
+
+ DROP TABLE TOURNAMENTS.Participant
